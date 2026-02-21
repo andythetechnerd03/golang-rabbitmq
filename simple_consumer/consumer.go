@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-
 	"github.com/rabbitmq/amqp091-go"
 )
 
@@ -48,4 +47,6 @@ func main () {
 	for msg := range msgs {
 		log.Println("Received a message:", string(msg.Body))
 	}
+
+	log.Println("All messages have been received!")
 }
