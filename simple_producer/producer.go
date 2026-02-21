@@ -3,9 +3,7 @@ package main
 import (
 	"context"
 	"log"
-	"os/exec"
 	"time"
-
 	"github.com/rabbitmq/amqp091-go"
 )
 
@@ -27,23 +25,25 @@ func main() {
 	// Declare a queue
 	q, err := ch.QueueDeclare(
 		"hello", // queue name
-		false, // durable
+		true, // durable
 		false, // autodelete
 		false, // exclusive
 		false, // nowait
-		nil, // args
+		amqp091.Table{
+			"x-queue-type": "quorum",
+		}, // args
 	)
 	if err != nil {
 		log.Fatalln("Failed to declare a queue:", err)
 	}
 	log.Println("Connected and queue declared")
 
-	log.Println("Stopping RabbitMQ Container...")
-	cmd := exec.Command("docker", "stop", "rabbitmq")
-	if err := cmd.Run(); err != nil {
-		log.Fatalln("Failed to stop RabbitMQ container:", err)
-	}
-	time.Sleep(time.Second)
+	// log.Println("Stopping RabbitMQ Container...")
+	// cmd := exec.Command("docker", "stop", "rabbitmq")
+	// if err := cmd.Run(); err != nil {
+	// 	log.Fatalln("Failed to stop RabbitMQ container:", err)
+	// }
+	// time.Sleep(time.Second)
 
 	// Declare context
 	ctx, cancel := context.WithTimeout(
@@ -70,10 +70,10 @@ func main() {
 	}
 	log.Println("Sent:", msg)
 
-	log.Println("Restarting RabbitMQ Container...")
-	cmd = exec.Command("docker", "start", "rabbitmq")
-	if err := cmd.Run(); err != nil {
-		log.Fatalln("Failed to start RabbitMQ container:", err)
-	}
-	log.Println("RabbitMQ container restarted successfully!")
+	// log.Println("Restarting RabbitMQ Container...")
+	// cmd = exec.Command("docker", "start", "rabbitmq")
+	// if err := cmd.Run(); err != nil {
+	// 	log.Fatalln("Failed to start RabbitMQ container:", err)
+	// }
+	// log.Println("RabbitMQ container restarted successfully!")
 }

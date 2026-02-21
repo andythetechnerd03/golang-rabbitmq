@@ -21,11 +21,13 @@ func main () {
 
 	q, err := ch.QueueDeclare(
 		"hello", // queue name
-		false, // durable
+		true, // durable for quorum
 		false, // autodelete
 		false, // exclusive
 		false, // nowait
-		nil, // args
+		amqp091.Table{
+			"x-queue-type": "quorum",
+		}, // args
 	)
 	if err != nil {
 		log.Fatalln("Failed to declare a queue:", err)
@@ -34,7 +36,7 @@ func main () {
 	msgs, err := ch.Consume(
 		q.Name, // queue name
 		"", // consumer tag
-		true, // auto ack
+		false, // auto ack, false will keep program running, true will stop after consuming all
 		false, // exclusive
 		false, // no local
 		false, // no wait
@@ -46,7 +48,12 @@ func main () {
 
 	for msg := range msgs {
 		log.Println("Received a message:", string(msg.Body))
-	}
 
-	log.Println("All messages have been received!")
+		// If processing successful, acknowledge the message
+		// msg.Ack(false) // false means 'ack this message only'. true in case of batch processing
+
+		// msg.Nack(false, true)
+		// If auto-ack false and requeue true, there will be a 21-message loop of quorum queue redelivery.
+		msg.Reject(false)
+	}
 }
