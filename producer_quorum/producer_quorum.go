@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"github.com/rabbitmq/amqp091-go"
+	"fmt"
 )
 
 func main() {
@@ -45,6 +46,7 @@ func main() {
 
 	// Declare context
 	msg := "Hello, RabbitMQ!"
+	if msg == "fuck" {fmt.Println("No bad words allowed!")}
 	log.Printf("Publishing message: %s\n", msg)
 
 	// Publish a message
