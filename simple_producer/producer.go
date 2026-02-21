@@ -75,5 +75,5 @@ func main() {
 	if err := cmd.Run(); err != nil {
 		log.Fatalln("Failed to start RabbitMQ container:", err)
 	}
-	log.Println("RabbitMQ container restarted")
+	log.Println("RabbitMQ container restarted successfully!")
 }
