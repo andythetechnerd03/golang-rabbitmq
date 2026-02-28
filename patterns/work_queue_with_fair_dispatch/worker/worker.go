@@ -26,6 +26,15 @@ func main() {
 		log.Fatalln("Failed to declare a queue:", err)
 	}
 	log.Printf("Declared queue: %s", q.Name)
+
+	// Set QoS to prefetch 1 message at a time, this ensures that a worker doesn't get overwhelmed with multiple messages at once
+	// This is important for work queues to ensure fair distribution of tasks among workers
+	// Example: instead of round-robin distribution, a worker will only receive a new message after it has acknowledged the previous one
+	err = ch.Qos(1, 0, false)
+	if err != nil {
+		log.Fatalln("Failed to set QoS:", err)
+	}
+
 	msgs, err := ch.Consume(q.Name, "", false, false, false, false, nil)
 	if err != nil {
 		log.Fatalln("Failed to register a consumer:", err)
